@@ -1,8 +1,11 @@
 # My Zerotier
 
-## Init ZeroTier
+## Init Zerotier
+
+start ZeroTier once to init id and key, all data save to `/var/lib/zerotier-one/`
+
 ```
-docker run -itd --rm \
+sudo docker run -itd --rm \
     --name zerotier \
     -p 19993:9993 \
     -p 19993:9993/udp \
@@ -15,7 +18,8 @@ docker stop zerotier
 rm -f /var/lib/zerotier-one/planet
 ```
 
-## Generate planet
+set your public server ip, generate planet file, later need replace planet to all client device, file save to `/var/lib/zerotier-one/planet`
+
 ```
 sudo docker run -it --rm \
     -v /var/lib/zerotier-one:/var/lib/zerotier-one \
@@ -27,7 +31,7 @@ sudo docker run -it --rm \
 
 ## Start
 ```
-docker run -itd --rm \
+sudo docker run -itd --restart=always \
     --name zerotier \
     -p 19993:9993 \
     -p 19993:9993/udp \
@@ -43,19 +47,40 @@ docker run -itd --rm \
 docker stop zerotier
 ```
 
-## How to use
-
-### Server manager
+## Server manager
 ```
 http://[your ip]:3000
 ```
 
-### Client connect
-#### Download planet file
-file is `/var/lib/zerotier-one/planet`
+## Client config
 
-#### Replace to device
-##### Windows
-+ Replace `planet` to `C:\ProgramData\ZeroTier\One`
-+ Click `[Task Manager] - [Service] - [ZeroTierOneService]` and restart
+### Download planet file
+save plant file (`/var/lib/zerotier-one/planet`) from server
 
+### Leave all official network id
+
+```
+sudo zerotier-cli listnetworks
+sudo zerotier-cli leave [network id]
+```
+
+### Replace to device
+
+#### Windows
++ Click `[Task Manager] - [Service] - [ZeroTierOneService]`, do stop 
++ Replace `planet` file to `C:\ProgramData\ZeroTier\One\planet`
++ Click `[Task Manager] - [Service] - [ZeroTierOneService]` do start
+
+#### Linux
+```
+sudo service zerotier-one stop
+sudo cp -f planet /var/lib/zerotier-one/planet
+sudo service zerotier-one start
+```
+
+#### macOS
+```
+sudo launchctl unload /Library/LaunchDaemons/com.zerotier.one.plist
+sudo cp -f planet '/Library/Application Support/ZeroTier/One/planet'
+sudo launchctl load /Library/LaunchDaemons/com.zerotier.one.plist
+```
