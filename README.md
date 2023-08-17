@@ -44,7 +44,7 @@ sudo docker run -itd --restart=always \
 
 ## Stop
 ```
-docker stop zerotier
+sudo docker stop zerotier
 ```
 
 ## Server manager
